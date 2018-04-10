@@ -17,7 +17,7 @@ import java.util.Map;
 
 
 
-@Configuration
+// @Configuration  暂时注掉
 public class ShiroConfiguration {
 
     /**
