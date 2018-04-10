@@ -1,0 +1,29 @@
+package com.boot.study.servlet;
+
+/**
+ * Created by hujh on 2018/3/26.
+ */
+
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
+import javax.servlet.annotation.WebListener;
+
+/**
+ * 使用@WebListener注解，实现ServletContextListener接口
+ * 可以用 FilterRegistrationBean 和 ServletListenerRegistrationBean 代码注册
+ * @author Angel(QQ:412887952)
+ * @version v.0.1
+ */
+@WebListener
+public class MyServletContextListener implements ServletContextListener {
+
+    @Override
+    public void contextDestroyed(ServletContextEvent arg0) {
+        System.out.println("ServletContex销毁");
+    }
+
+    @Override
+    public void contextInitialized(ServletContextEvent arg0) {
+        System.out.println("ServletContex初始化");
+    }
+}
