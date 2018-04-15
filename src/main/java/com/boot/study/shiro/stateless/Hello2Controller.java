@@ -1,6 +1,7 @@
 package com.boot.study.shiro.stateless;
 
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,6 +24,10 @@ public class Hello2Controller {
      * Session creation has been disabled for the current subject.
      */
 
+    /**
+     * http://127.0.0.1:8080/hello?username=admin&params1=love&params2=girl&digest=df7f1595bd5682638556072c8ccde5edadcd807a829373d21af38fb1bc707da7
+     这里的digest是根据参数生成的
+     */
     @RequestMapping("/hello3")
     public String hello3(){
         Subject currentUser = SecurityUtils.getSubject();
@@ -31,5 +36,17 @@ public class Hello2Controller {
         return "hello3,Andy";
 
     }
+
+    /**
+     * http://127.0.0.1:8080/hello4?username=admin&params1=love&params2=girl&digest=df7f1595bd5682638556072c8ccde5edadcd807a829373d21af38fb1bc707da7
+     */
+    @RequestMapping("/hello4")
+    @RequiresRoles("admin")
+// @RequiresPermissions("userInfo:add")//权限管理;
+    public String hello4(){
+        return "hello4,Andy";
+    }
+
+
 
 }

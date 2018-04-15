@@ -3,9 +3,12 @@ package com.boot.study;
 import com.boot.study.dynamicioc.TestService;
 import com.boot.study.properties.Wisely2Settings;
 import com.boot.study.properties.WiselySettings;
+import com.boot.study.quartz.HelloJob;
 import com.boot.study.registrybean.MyBeanDefinitionRegistryPostProcessor;
 import com.boot.study.servlet.MyServlet1;
 import org.mybatis.spring.annotation.MapperScan;
+import org.quartz.*;
+import org.quartz.impl.StdSchedulerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -23,6 +26,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 
 import javax.servlet.MultipartConfigElement;
+import java.util.concurrent.TimeUnit;
 
 
 @SpringBootApplication
@@ -46,7 +50,7 @@ public class SpringbootStudyApplication extends SpringBootServletInitializer {
 
 	public static void main(String[] args) {
 
-		//获取context.  -- Angel -守护天使
+		//获取context.
 		ApplicationContext ctx =  (ApplicationContext) SpringApplication.run(SpringbootStudyApplication.class, args);
 
 
@@ -82,6 +86,8 @@ public class SpringbootStudyApplication extends SpringBootServletInitializer {
 		//删除bean.
 		// defaultListableBeanFactory.removeBeanDefinition("testService");
 
+		// quartz
+		scheduler();
 	}
 
 	@Bean
@@ -139,4 +145,35 @@ public class SpringbootStudyApplication extends SpringBootServletInitializer {
 	 */
 
 
+	public static void scheduler() {
+		try {
+			// 获取Scheduler实例
+			Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
+			scheduler.start();
+			System.out.println("scheduler.start");
+
+			System.out.println(scheduler.getSchedulerName());
+
+			//具体任务.
+			JobDetail jobDetail = JobBuilder.newJob(HelloJob.class).withIdentity("job1", "group1").build();
+
+			//触发时间点. (每5秒执行1次.)
+			SimpleScheduleBuilder simpleScheduleBuilder = SimpleScheduleBuilder.simpleSchedule().withIntervalInSeconds(5).repeatForever();
+			// 触发时间点
+			Trigger trigger = TriggerBuilder.newTrigger().withIdentity("trigger1", "group1").startNow().withSchedule(simpleScheduleBuilder).build();
+
+			// CronScheduleBuilder cronScheduleBuilder = CronScheduleBuilder.cronSchedule("0 * * * * ? *");
+			// Trigger trigger = TriggerBuilder.newTrigger().withIdentity("trigger1", "group1").withSchedule(cronScheduleBuilder).build();
+
+			// 交由Scheduler安排触发
+			scheduler.scheduleJob(jobDetail, trigger);
+
+			//睡眠20秒.
+			TimeUnit.SECONDS.sleep(20);
+			scheduler.shutdown(); //关闭定时任务调度器.
+			System.out.println("scheduler.shutdown");
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
 }
